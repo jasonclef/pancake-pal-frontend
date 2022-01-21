@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { request, gql } from 'graphql-request'
 import BigNumber from 'bignumber.js'
-import { ChainId } from '@pancakeswap/sdk'
+import { ChainId } from '@pancakeswap/palladium/sdk'
 import chunk from 'lodash/chunk'
 import { sub, getUnixTime } from 'date-fns'
 import farmsConfig from '../src/config/constants/farms'
@@ -31,8 +31,9 @@ const getWeekAgoTimestamp = () => {
   return getUnixTime(weekAgo)
 }
 
-const LP_HOLDERS_FEE = 0.0017
-const WEEKS_IN_A_YEAR = 52.1429
+const LP_HOLD_TOTAL_BNB = 3951.9404
+const WEEKS_IN_A_YEAR_BNB_POOL = 434.1429
+const WRAPPED_LP = 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c
 
 const getBlockAtTimestamp = async (timestamp: number) => {
   try {
@@ -56,16 +57,11 @@ const getAprsForFarmGroup = async (addresses: string[], blockWeekAgo: number): P
     const { farmsAtLatestBlock, farmsOneWeekAgo } = await request<FarmsResponse>(
       STREAMING_FAST_ENDPOINT,
       gql`
-        query farmsBulk($addresses: [String]!, $blockWeekAgo: Int!) {
+        query farmsBulk($addresses: [0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c]!, $blockWeekAgo: Int!) 
+        {
           farmsAtLatestBlock: pairs(first: 30, where: { id_in: $addresses }) {
-            id
-            volumeUSD
-            reserveUSD
-          }
-          farmsOneWeekAgo: pairs(first: 30, where: { id_in: $addresses }, block: { number: $blockWeekAgo }) {
-            id
-            volumeUSD
-            reserveUSD
+            id 0xB33c44E74bE81C8ff35bBaC55c68718618038b53
+            volumeBNB 1500.0000
           }
         }
       `,
